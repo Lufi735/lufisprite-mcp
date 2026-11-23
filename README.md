@@ -128,7 +128,7 @@ Copy the `skill/lufisprite-studio` folder into your agent's skills directory so 
 
 ---
 
-## Available MCP Tools (23 Tools)
+## Available MCP Tools (40 Tools)
 
 ### App & Project
 | Tool | Description |
@@ -139,38 +139,55 @@ Copy the `skill/lufisprite-studio` folder into your agent's skills directory so 
 | `open_project` | Open a saved project by `id` or `name`. |
 | `undo_redo` | Undo or redo recent operations (`steps`). |
 
-### 2D Pixel Art
+### 2D Pixel Art, Gradients, Text & Filters
 | Tool | Description |
 | --- | --- |
 | `draw_grid_ascii` | Paint a full sprite or region using ASCII character rows + a char-to-hex palette map. |
 | `draw_pixels` | Set an array of `{ x, y, color }` pixels in one undoable step. |
 | `draw_shape` | Draw filled or outlined `line`, `rect`, `circle`, or `ellipse`. |
+| `draw_gradient` | Paint linear or radial gradients with optional quantization steps and Bayer 2x2 dithering. |
 | `flood_fill` | Contiguous 4-way flood fill starting at `(x, y)`. |
+| `replace_color` | Globally replace a hex color (with optional tolerance) on one or all 2D layers. |
+| `add_text_2d` | Stamp crisp pixel text onto a new or existing 2D layer. |
+| `apply_filter` | Apply `contrast`, `hue_saturation`, `grayscale`, `invert`, `sepia`, `posterize`, `blur`, `crt`, `pixel_outline`, `wobble`, or `wave`. |
+| `transform_canvas` | Resize the canvas (`scaleContent`) or `flip_h`, `flip_v`, `rotate_cw`, `rotate_ccw`, `shift` layers. |
+| `generate_normal_map` | Auto-generate a tangent-space normal map for 2D lighting. |
 | `clear_layer` | Clear all pixels on a 2D layer. |
 | `get_layer_pixels` | Read non-empty pixels from a 2D layer or bounding box. |
 
-### Layers, Palette & Animation
+### Layers, Lighting, Particles, Palette & Animation
 | Tool | Description |
 | --- | --- |
-| `list_layers` | List all layers with indices, IDs, types (`2d`/`3d`/`group`), visibility, and opacity. |
+| `list_layers` | List all layers with indices, IDs, types (`2d`/`3d`/`group`/`light2d`/`particle2d`), visibility, and opacity. |
 | `create_layer` | Create a new `2d` or `3d` layer. |
 | `update_layer` | Select, rename, toggle visibility/opacity/blendMode, or delete a layer. |
+| `add_light_2d` | Add a dynamic 2D light (`light2d`) layer. |
+| `add_particle_2d` | Add a 2D particle emitter (`fire`, `smoke`, `spark`, `snow`, `rain`, `magic`). |
+| `add_special_layer` | Add a `group`, `parallax2d`, or `ninerect2d` layer. |
 | `set_palette_colors` | Set the active color and/or append colors to the active palette. |
 | `manage_frames` | `list`, `add`, `duplicate`, `select`, `delete` animation frames or `set_fps`. |
+| `manage_anim_tags` | `list`, `add`, or `delete` animation frame tags (Idle, Walk, Attack, etc.). |
 
-### 3D Modeling & Scene
+### 3D Modeling, Textures, Terrains & FX
 | Tool | Description |
 | --- | --- |
 | `open_3d_viewport` | Ensure a 3D layer exists and open the interactive 3D viewport. |
 | `add_3d_primitive` | Add `cube`, `cuboid`, `sphere`, `cylinder`, `cone`, `torus`, or `plane` with position/rotation/scale/color. |
 | `import_3d_obj` | Import custom/procedural Wavefront `.obj` mesh text directly into the 3D layer. |
+| `create_3d_terrain` | Generate a 3D heightmap terrain (`hills`, `mountain`, `island`, `flat`). |
 | `transform_3d_object` | Move, rotate (degrees), scale, recolor, rename, toggle visibility, or delete any 3D object. |
+| `set_3d_texture` | Apply pixel-art ASCII textures, 2D layer textures, or PNG data URLs to 3D meshes. |
+| `set_3d_material` | Edit `color`, `roughness`, `metalness`, `opacity`, `wireframe`, `flatShading`, and `emissive`. |
+| `set_3d_fx` | Configure 3D pixelation, palette clamp, outlines, dithering, and shader post-FX. |
 | `add_3d_scene_item` | Add `light`, `sun`, `point`, `ambient`, `camera`, `group`, or `bone`. |
 | `list_3d_objects` | List all 3D objects in the 3D layer with their transforms. |
+| `bake_3d_to_2d` | Render/bake the 3D scene directly into a 2D pixel art layer. |
 
-### Visual Inspection
+### Tilemap, Export & Visual Inspection
 | Tool | Description |
 | --- | --- |
+| `tilemap_2d` | Inspect, create, or paint tiles in the 2D Tilemap Editor. |
+| `export_asset` | Export `png`, `spritesheet` (with atlas JSON), `obj`, or `lufi_json`. |
 | `get_canvas_screenshot` | Capture a PNG screenshot of the `2d` composite canvas or `3d` viewport/layer. |
 
 ---

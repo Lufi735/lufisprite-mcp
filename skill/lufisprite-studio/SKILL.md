@@ -1,71 +1,68 @@
 ---
 name: lufisprite-studio
-description: Create 2D pixel art sprites, multi-frame animations, and 3D low-poly models/scenes directly inside LufiSprite Studio v1.224+ via the lufisprite-mcp bridge. Use whenever the user asks to draw pixel art, paint sprites, build animations, or create/edit 3D models or scenes in LufiSprite Studio.
+description: Create 2D pixel art sprites, filters, gradients, normal maps, lights, particles, animations, tilemaps, and 3D models/textures/terrains inside LufiSprite Studio v1.224+ via the lufisprite-mcp bridge. Use whenever the user asks to draw pixel art, apply effects, build animations, or create/edit 3D models or scenes in LufiSprite Studio.
 ---
 
 # LufiSprite Studio MCP Skill
 
-This skill guides AI coding agents (Google Antigravity, Cursor, Claude Code, etc.) on how to create high-quality 2D pixel art, animations, and 3D models inside a live **LufiSprite Studio** session using the `lufisprite-mcp` MCP server.
+This skill guides AI coding agents (Google Antigravity, Cursor, Claude Code, etc.) on how to use all **40 live MCP tools** inside **LufiSprite Studio v1.224+** via `lufisprite-mcp`.
 
 ## 1. Connection & Preflight Check
 
 Before drawing or modeling, always call `get_app_state` first:
 - **If connected and `screen === "editor"`**: Inspect `project.width`, `project.height`, `layers`, `enable3D`, and `objects3D` so you match the user's existing canvas or scene.
-- **If connected and `screen === "splash"`**: Call `create_project` (or `list_projects` + `open_project` if the user referenced an existing project).
+- **If connected and `screen === "splash"`**: Call `create_project` (or `list_projects` + `open_project`).
 - **If `get_app_state` returns a "No LufiSprite Studio instance is connected" error**:
   - Do NOT improvise local files as a replacement.
-  - Instruct the user clearly: *"Open LufiSprite Studio v1.224+, click the MCP plug icon in the top-right corner of the home page (or editor bar), and click **Connect** to `ws://127.0.0.1:41924`."* Then wait for the user to confirm.
+  - Instruct the user: *"Open LufiSprite Studio v1.224+, ensure PRO is active, click the MCP plug icon (home top-right or editor Toolbar), and click **Connect** to `ws://127.0.0.1:41924`."*
 
-## 2. 2D Pixel Art Workflow
+## 2. 2D Pixel Art, Filters, Lighting & FX Workflow
 
-1. **Choose the right canvas size**:
-   - Icons / tiles / retro sprites: `16x16` or `32x32`
-   - Detailed characters / UI portraits: `48x48` or `64x64`
-   - Set `enable3D: true` if the user might combine 2D and 3D layers.
-2. **Design your color palette intentionally**:
-   - Define 4–12 cohesive hex colors: an outline/shadow color (dark, slightly desaturated/hue-shifted — avoid pure `#000000` unless stylized), midtone, highlight, and accent colors.
-   - Optionally call `set_palette_colors` so the user can see and reuse your colors in the UI swatch bar.
-3. **Prefer `draw_grid_ascii` for full sprites**:
-   - Painting pixel-by-pixel with `draw_pixels` is slow and hard to read. Instead, compose a clean ASCII art grid in `rows` where each character maps to a hex color in `palette` (use `.` for transparent background).
-   - Every string in `rows` should be the same length and match the target width/region.
-   - Use `draw_shape` (`line`, `rect`, `circle`, `ellipse`) and `flood_fill` for backgrounds, bounding boxes, and geometric bases, then refine details with `draw_grid_ascii` or `draw_pixels`.
-4. **Use layers cleanly**:
-   - Separate background, character/subject, and highlights/FX with `create_layer({ name, type: "2d" })` and `update_layer`.
-5. **Animations**:
-   - Use `manage_frames({ action: "add" })` or `manage_frames({ action: "duplicate" })` to create subsequent animation frames, then paint frame differences on the active frame. Adjust timing with `manage_frames({ action: "set_fps", fps })`.
-6. **Always visually verify your work**:
-   - Call `get_canvas_screenshot({ source: "2d" })` after major drawing steps to inspect proportions, silhouette, shading, and alignment. Fix defects with `draw_pixels` / `draw_grid_ascii` / `undo_redo` before concluding.
+1. **Create / Setup**: `create_project({ width, height, enable3D })`. Optionally call `set_palette_colors`.
+2. **Base Painting**:
+   - Use `draw_gradient` (`vertical`, `horizontal`, `diagonal`, `radial`, optional `dither: true`) for skies/backgrounds.
+   - Use `draw_grid_ascii` for fast full-sprite painting (`.` for transparent).
+   - Use `draw_shape`, `draw_pixels`, `flood_fill`, `add_text_2d`, and `replace_color` for refinements and color swaps.
+3. **Filters & Transforms**:
+   - `apply_filter`: `pixel_outline` (great for crisp sprite outlines!), `contrast`, `hue_saturation`, `grayscale`, `invert`, `sepia`, `posterize`, `blur`, `crt`, `wobble`, `wave`.
+   - `transform_canvas`: `resize` (with optional `scaleContent`), `flip_h`, `flip_v`, `rotate_cw`, `rotate_ccw`, `shift`.
+4. **Dynamic 2D Lighting, Particles & Special Layers**:
+   - Call `generate_normal_map` on a pixel layer and add `add_light_2d` for dynamic 2D shading.
+   - Add `add_particle_2d` (`fire`, `smoke`, `spark`, `snow`, `rain`, `magic`) or `add_special_layer` (`group`, `parallax2d`, `ninerect2d`).
+5. **Animation & Tags**:
+   - `manage_frames` (`add`, `duplicate`, `select`, `delete`, `set_fps`) + `manage_anim_tags` (`add`, `list`, `delete` e.g. Idle/Walk/Attack).
+6. **Verify Visually**: Always call `get_canvas_screenshot({ source: "2d" })` after major steps.
 
-## 3. 3D Modeling & Scene Workflow
+## 3. 3D Modeling, Textures, Terrains & Baking Workflow
 
-LufiSprite Studio uses a **right-handed Y-up** 3D coordinate system (`+Y` is up, `+X` is right, `+Z` is toward the default camera). Rotations in all MCP tools are specified in **degrees** `[rx, ry, rz]`.
+LufiSprite Studio uses a **right-handed Y-up** 3D coordinate system (`+Y` up, `+X` right, `+Z` toward camera). Rotations are in **degrees** `[rx, ry, rz]`.
 
-1. **Open the 3D viewport**:
-   - Call `open_3d_viewport` (this automatically enables 3D on the project and creates/focuses the `3d` layer if needed).
-2. **Compose with `add_3d_primitive` for multi-part models**:
-   - Supported `kind` values: `cube`, `cuboid`, `sphere`, `cylinder`, `cone`, `torus`, `plane`.
-   - Give every part a descriptive `name`, `position: [x, y, z]`, `rotation: [rx, ry, rz]`, `scale: [sx, sy, sz]`, and `color: "#hex"`.
-   - Example: To build a stylized tree, place a brown `cylinder` trunk at `[0, 0.5, 0]` (`params: { r: 0.18, h: 1.0 }`), then stack 2–3 green `cone` foliage tiers at `[0, 1.3, 0]`, `[0, 1.8, 0]`, etc.
-3. **Create custom/organic/architectural geometry with `import_3d_obj`**:
-   - When primitives aren't enough (swords, roofs, spaceships, low-poly rocks, stairs, furniture), generate valid Wavefront `.obj` text (`v x y z`, `vn nx ny nz`, `vt u v`, `f v1/vt1/vn1 ...` triangles or quads) and pass it to `import_3d_obj`.
-   - Keep vertex coordinates centered around `(0, 0, 0)` or sitting on `y = 0` so `position` and `rotation` behave predictably.
-4. **Organize, light, and inspect**:
-   - Group related parts with `add_3d_scene_item({ kind: "group", name })` or add extra lights (`light`, `sun`, `point`, `ambient`) if you want warmer/cooler contrast.
-   - Adjust existing objects anytime with `transform_3d_object` (lookup by `id`, `index`, or `name`).
-   - Always call `get_canvas_screenshot({ source: "3d" })` to visually verify that parts connect properly with no floating gaps or unintended clipping!
+1. **Open 3D**: Call `open_3d_viewport` (auto-enables 3D and creates the `3d` layer).
+2. **Build Geometry**:
+   - `add_3d_primitive`: `cube`, `cuboid`, `sphere`, `cylinder`, `cone`, `torus`, `plane`.
+   - `import_3d_obj`: custom procedural Wavefront `.obj` geometry.
+   - `create_3d_terrain`: heightmap terrain (`hills`, `mountain`, `island`, `flat`).
+3. **Apply Pixel Textures, PBR Materials & FX**:
+   - `set_3d_texture`: paint a pixel-art texture directly onto any 3D mesh via ASCII `rows` + `palette`, or from an existing 2D layer (`fromLayerIndex`), or `dataUrl` (use `filterMode: "nearest"` for crisp pixel-art textures).
+   - `set_3d_material`: adjust `color`, `roughness`, `metalness`, `opacity`, `wireframe`, `flatShading`, `emissive`.
+   - `set_3d_fx`: configure 3D-to-pixel effects (`pixelate`, `paletteLimit`, `outlineEnabled`, `dither`, `shaderEnabled`, `resDown`, `posterize`).
+   - `add_3d_scene_item`: add `light`, `sun`, `point`, `ambient`, `camera`, `group`, or `bone`.
+   - `bake_3d_to_2d`: bake the 3D scene view directly into a 2D pixel layer!
+4. **Verify Visually**: Call `get_canvas_screenshot({ source: "3d" })` to inspect alignment, textures, and lighting.
 
-## 4. Quick Reference — Available Tools
+## 4. Tilemap & Export
+
+- `tilemap_2d`: `get_state`, `create`, `set_tiles`, `fill_rect` for 2D tilemaps.
+- `export_asset`: export `png`, `spritesheet` (horizontal PNG + atlas frames), `obj` (3D Wavefront OBJ text), or `lufi_json`.
+
+## 5. Quick Reference — All 40 Tools
 
 | Category | Tools |
 | --- | --- |
 | **App & Project** | `get_app_state`, `create_project`, `list_projects`, `open_project`, `undo_redo` |
-| **2D Painting** | `draw_grid_ascii`, `draw_pixels`, `draw_shape`, `flood_fill`, `clear_layer`, `get_layer_pixels` |
-| **Layers & Palette** | `list_layers`, `create_layer`, `update_layer`, `set_palette_colors` |
-| **Animation** | `manage_frames` (`list`, `add`, `duplicate`, `select`, `delete`, `set_fps`) |
-| **3D Modeling** | `open_3d_viewport`, `add_3d_primitive`, `import_3d_obj`, `transform_3d_object`, `add_3d_scene_item`, `list_3d_objects` |
-| **Visual Inspection** | `get_canvas_screenshot` (`source: "2d"` or `"3d"`) |
-
-## 5. Common Pitfalls to Avoid
-- **2D coordinates**: `(0, 0)` is the **top-left** pixel; `y` increases downward.
-- **Maximum one 3D layer per project**: LufiSprite Studio allows at most one `type: "3d"` layer per project, containing many 3D objects (`add_3d_primitive`, `import_3d_obj`, lights, groups, bones, cameras).
-- **Screenshot before finishing**: Never assume a sprite or 3D composition looks right without inspecting `get_canvas_screenshot` at least once.
+| **2D Painting & Text** | `draw_grid_ascii`, `draw_pixels`, `draw_shape`, `draw_gradient`, `flood_fill`, `replace_color`, `add_text_2d`, `clear_layer`, `get_layer_pixels` |
+| **Filters & Transforms** | `apply_filter`, `transform_canvas`, `generate_normal_map` |
+| **Layers, FX & Palette** | `list_layers`, `create_layer`, `update_layer`, `add_light_2d`, `add_particle_2d`, `add_special_layer`, `set_palette_colors` |
+| **Animation** | `manage_frames`, `manage_anim_tags` |
+| **3D Modeling & Textures** | `open_3d_viewport`, `add_3d_primitive`, `import_3d_obj`, `create_3d_terrain`, `transform_3d_object`, `set_3d_texture`, `set_3d_material`, `set_3d_fx`, `add_3d_scene_item`, `list_3d_objects`, `bake_3d_to_2d` |
+| **Tilemap & Export** | `tilemap_2d`, `export_asset`, `get_canvas_screenshot` |

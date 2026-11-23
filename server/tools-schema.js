@@ -344,6 +344,338 @@ const TOOLS = [
       },
       additionalProperties: false
     }
+  },
+  {
+    name: 'apply_filter',
+    description: 'Apply an image/pixel filter (contrast, hue_saturation, grayscale, invert, sepia, posterize, blur, crt, pixel_outline, wobble, wave) to a 2D layer.',
+    inputSchema: {
+      type: 'object',
+      required: ['filter'],
+      properties: {
+        filter: {
+          type: 'string',
+          enum: ['contrast', 'hue_saturation', 'grayscale', 'invert', 'sepia', 'posterize', 'blur', 'crt', 'pixel_outline', 'wobble', 'wave']
+        },
+        layerIndex: { type: 'integer' },
+        amount: { type: 'number', description: 'Contrast amount (-254..254).' },
+        brightness: { type: 'number', description: 'Brightness offset (-255..255).' },
+        hue: { type: 'number', description: 'Hue shift in degrees (-180..180).' },
+        saturation: { type: 'number', description: 'Saturation shift (-100..100).' },
+        lightness: { type: 'number', description: 'Lightness shift (-100..100).' },
+        levels: { type: 'integer', minimum: 2, maximum: 32, description: 'Posterize levels.' },
+        radius: { type: 'integer', minimum: 1, maximum: 5, description: 'Blur radius.' },
+        intensity: { type: 'number', minimum: 0, maximum: 1, description: 'CRT scanline intensity.' },
+        color: { type: 'string', description: 'Hex color for pixel_outline.' },
+        mode: { type: 'string', enum: ['outside', 'inside'], description: 'Outline placement mode.' },
+        connectivity: { type: 'integer', enum: [4, 8], description: 'Outline connectivity (4 or 8).' },
+        amplitude: { type: 'number', description: 'Wobble/wave amplitude in pixels.' },
+        frequency: { type: 'number', description: 'Wobble/wave frequency.' },
+        phase: { type: 'number', description: 'Wobble/wave phase offset.' }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'draw_gradient',
+    description: 'Paint a linear (vertical, horizontal, diagonal) or radial gradient with optional quantization steps and Bayer 2x2 dithering onto a 2D layer.',
+    inputSchema: {
+      type: 'object',
+      required: ['fromColor', 'toColor'],
+      properties: {
+        fromColor: { type: 'string' },
+        toColor: { type: 'string' },
+        direction: { type: 'string', enum: ['vertical', 'horizontal', 'diagonal', 'radial'] },
+        steps: { type: 'integer', minimum: 2, maximum: 256 },
+        dither: { type: 'boolean' },
+        x: { type: 'integer' },
+        y: { type: 'integer' },
+        width: { type: 'integer' },
+        height: { type: 'integer' },
+        layerIndex: { type: 'integer' }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'replace_color',
+    description: 'Globally replace one hex color with another (or null to erase) on a 2D layer or across all 2D layers, with optional RGB tolerance.',
+    inputSchema: {
+      type: 'object',
+      required: ['fromColor', 'toColor'],
+      properties: {
+        fromColor: { type: 'string' },
+        toColor: { type: ['string', 'null'] },
+        tolerance: { type: 'number', minimum: 0 },
+        allLayers: { type: 'boolean' },
+        layerIndex: { type: 'integer' }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'transform_canvas',
+    description: 'Resize the project canvas (crop/pad or nearest-neighbor scale) or transform 2D layers (flip_h, flip_v, rotate_cw, rotate_ccw, shift).',
+    inputSchema: {
+      type: 'object',
+      required: ['action'],
+      properties: {
+        action: { type: 'string', enum: ['resize', 'flip_h', 'flip_v', 'rotate_cw', 'rotate_ccw', 'shift'] },
+        width: { type: 'integer', minimum: 4, maximum: 512 },
+        height: { type: 'integer', minimum: 4, maximum: 512 },
+        scaleContent: { type: 'boolean', description: 'When resizing, scale existing pixels using nearest-neighbor.' },
+        dx: { type: 'integer' },
+        dy: { type: 'integer' },
+        wrap: { type: 'boolean' },
+        allLayers: { type: 'boolean' },
+        layerIndex: { type: 'integer' }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'add_text_2d',
+    description: 'Render crisp pixel text onto a new or existing 2D layer.',
+    inputSchema: {
+      type: 'object',
+      required: ['text'],
+      properties: {
+        text: { type: 'string' },
+        x: { type: 'integer' },
+        y: { type: 'integer' },
+        color: { type: 'string' },
+        fontSize: { type: 'integer', minimum: 5, maximum: 64 },
+        fontFamily: { type: 'string' },
+        createLayer: { type: 'boolean' },
+        layerIndex: { type: 'integer' }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'generate_normal_map',
+    description: 'Auto-generate a tangent-space normal map for a 2D pixel layer so 2D lights shade it realistically.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        layerIndex: { type: 'integer' },
+        strength: { type: 'number', minimum: 0.1, maximum: 10 },
+        invertY: { type: 'boolean' }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'add_light_2d',
+    description: 'Add a 2D dynamic light (light2d) layer to illuminate pixel layers and normal maps.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        x: { type: 'integer' },
+        y: { type: 'integer' },
+        z: { type: 'number' },
+        color: { type: 'string' },
+        intensity: { type: 'number' },
+        radius: { type: 'number' },
+        ambient: { type: 'number' }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'add_particle_2d',
+    description: 'Add a 2D particle emitter layer (fire, smoke, spark, snow, rain, magic) with customizable emitter parameters.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        preset: { type: 'string', enum: ['fire', 'smoke', 'spark', 'snow', 'rain', 'magic'] },
+        x: { type: 'number' },
+        y: { type: 'number' },
+        rate: { type: 'number' },
+        life: { type: 'number' },
+        speed: { type: 'number' },
+        gravity: { type: 'number' },
+        color: { type: 'string' },
+        size: { type: 'integer' }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'add_special_layer',
+    description: 'Add a folder group, Parallax2D layer, or NineRect2D (9-slice panel) layer.',
+    inputSchema: {
+      type: 'object',
+      required: ['kind'],
+      properties: {
+        kind: { type: 'string', enum: ['group', 'parallax2d', 'ninerect2d'] },
+        name: { type: 'string' },
+        speedX: { type: 'number' },
+        speedY: { type: 'number' },
+        x: { type: 'integer' },
+        y: { type: 'integer' },
+        width: { type: 'integer' },
+        height: { type: 'integer' },
+        borderColor: { type: 'string' },
+        fillColor: { type: 'string' }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'set_3d_texture',
+    description: 'Assign or clear a pixel-art or image texture on a 3D mesh object from ASCII rows+palette, an existing 2D layer, or a PNG dataUrl.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: { type: ['number', 'string'] },
+        index: { type: 'integer' },
+        name: { type: 'string' },
+        rows: { type: 'array', items: { type: 'string' }, description: 'ASCII texture rows.' },
+        palette: { type: 'object', additionalProperties: { type: ['string', 'null'] } },
+        fromLayerIndex: { type: 'integer', description: 'Copy pixels from a 2D layer as the texture.' },
+        dataUrl: { type: 'string', description: 'Direct PNG data URL.' },
+        filterMode: { type: 'string', enum: ['nearest', 'linear'] },
+        clear: { type: 'boolean' }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'set_3d_material',
+    description: 'Update material properties (color, roughness, metalness, opacity, wireframe, flatShading, emissive) of a 3D mesh object.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: { type: ['number', 'string'] },
+        index: { type: 'integer' },
+        name: { type: 'string' },
+        color: { type: 'string' },
+        roughness: { type: 'number', minimum: 0, maximum: 1 },
+        metalness: { type: 'number', minimum: 0, maximum: 1 },
+        opacity: { type: 'number', minimum: 0, maximum: 1 },
+        wireframe: { type: 'boolean' },
+        flatShading: { type: 'boolean' },
+        emissive: { type: 'string' }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'set_3d_fx',
+    description: 'Configure 3D-to-pixel FX and shader post-processing (pixelate, paletteLimit, outlineEnabled, outlineColor, dither, textureFilter, shaderEnabled, resDown, posterize).',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        pixelate: { type: 'boolean' },
+        paletteLimit: { type: 'boolean' },
+        outlineEnabled: { type: 'boolean' },
+        outlineColor: { type: 'string' },
+        dither: { type: 'boolean' },
+        textureFilter: { type: 'string', enum: ['nearest', 'linear'] },
+        shaderEnabled: { type: 'boolean' },
+        resDown: { type: 'integer', minimum: 1, maximum: 16 },
+        posterize: { type: 'integer', minimum: 2, maximum: 16 }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'create_3d_terrain',
+    description: 'Generate and add a 3D heightmap terrain mesh (hills, mountain, island, flat) to the 3D layer.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        preset: { type: 'string', enum: ['hills', 'mountain', 'island', 'flat'] },
+        size: { type: 'number', minimum: 1, maximum: 20 },
+        segments: { type: 'integer', minimum: 4, maximum: 32 },
+        heightScale: { type: 'number' },
+        seed: { type: 'number' },
+        position: { type: 'array', items: { type: 'number' }, minItems: 3, maxItems: 3 },
+        color: { type: 'string' }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'bake_3d_to_2d',
+    description: 'Render/bake the current 3D scene camera view into a 2D pixel art layer.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        targetLayerName: { type: 'string' },
+        createLayer: { type: 'boolean' },
+        layerIndex: { type: 'integer' }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'manage_anim_tags',
+    description: 'List, add, or delete animation frame tags (e.g. Idle, Walk, Attack) with frame ranges and colors.',
+    inputSchema: {
+      type: 'object',
+      required: ['action'],
+      properties: {
+        action: { type: 'string', enum: ['list', 'add', 'delete'] },
+        id: { type: 'string' },
+        name: { type: 'string' },
+        from: { type: 'integer', minimum: 0 },
+        to: { type: 'integer', minimum: 0 },
+        color: { type: 'string' }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'tilemap_2d',
+    description: 'Inspect, create, or paint tiles in LufiSprite Studio 2D Tilemap Editor.',
+    inputSchema: {
+      type: 'object',
+      required: ['action'],
+      properties: {
+        action: { type: 'string', enum: ['get_state', 'create', 'set_tiles', 'fill_rect'] },
+        name: { type: 'string' },
+        mapW: { type: 'integer', minimum: 2, maximum: 256 },
+        mapH: { type: 'integer', minimum: 2, maximum: 256 },
+        tileW: { type: 'integer', minimum: 4, maximum: 128 },
+        tileH: { type: 'integer', minimum: 4, maximum: 128 },
+        layerIndex: { type: 'integer' },
+        x: { type: 'integer' },
+        y: { type: 'integer' },
+        width: { type: 'integer' },
+        height: { type: 'integer' },
+        tileIndex: { type: 'integer' },
+        tiles: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['x', 'y', 'tileIndex'],
+            properties: {
+              x: { type: 'integer' },
+              y: { type: 'integer' },
+              tileIndex: { type: 'integer' }
+            }
+          }
+        }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'export_asset',
+    description: 'Export the active project as a PNG, horizontal Sprite Sheet PNG + atlas JSON, Wavefront .obj text, or .lufi project JSON.',
+    inputSchema: {
+      type: 'object',
+      required: ['format'],
+      properties: {
+        format: { type: 'string', enum: ['png', 'spritesheet', 'obj', 'lufi_json'] },
+        scale: { type: 'integer', minimum: 1, maximum: 8 }
+      },
+      additionalProperties: false
+    }
   }
 ];
 
