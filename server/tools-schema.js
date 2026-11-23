@@ -676,6 +676,184 @@ const TOOLS = [
       },
       additionalProperties: false
     }
+  },
+  {
+    name: 'tilemap_3d',
+    description: 'Open, clear, place/remove 3D tiles, fill 3D planes/walls, add 3D tilemap primitives (box, cylinder, cone), or capture screenshots in the Tilemap 3D Editor.',
+    inputSchema: {
+      type: 'object',
+      required: ['action'],
+      properties: {
+        action: { type: 'string', enum: ['get_state', 'open', 'close', 'clear', 'set_tiles', 'fill_plane', 'add_primitive', 'screenshot'] },
+        name: { type: 'string' },
+        tiles: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['x', 'y', 'z'],
+            properties: {
+              x: { type: 'integer' },
+              y: { type: 'integer' },
+              z: { type: 'integer' },
+              axis: { type: 'string', enum: ['x', 'y', 'z'] },
+              sign: { type: 'integer', enum: [1, -1] },
+              color: { type: 'string' },
+              remove: { type: 'boolean' }
+            }
+          }
+        },
+        axis: { type: 'string', enum: ['x', 'y', 'z'] },
+        sign: { type: 'integer', enum: [1, -1] },
+        level: { type: 'integer' },
+        x0: { type: 'integer' },
+        z0: { type: 'integer' },
+        width: { type: 'integer' },
+        depth: { type: 'integer' },
+        color: { type: 'string' },
+        primType: { type: 'string', enum: ['box', 'cylinder', 'cone', 'propsingle', 'propcross'] },
+        position: { type: 'array', items: { type: 'number' }, minItems: 3, maxItems: 3 }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'draw2d_vector',
+    description: 'Create and draw in the Freehand Draw2D or Vector-only editor (strokes, Bezier/polygon vector paths, and PNG screenshot).',
+    inputSchema: {
+      type: 'object',
+      required: ['action'],
+      properties: {
+        action: { type: 'string', enum: ['get_state', 'create', 'draw_stroke', 'draw_vector', 'screenshot'] },
+        name: { type: 'string' },
+        width: { type: 'integer' },
+        height: { type: 'integer' },
+        bg: { type: 'string' },
+        vectorOnly: { type: 'boolean' },
+        color: { type: 'string' },
+        size: { type: 'number' },
+        closed: { type: 'boolean' },
+        fill: { type: 'boolean' },
+        sharp: { type: 'boolean' },
+        points: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['x', 'y'],
+            properties: {
+              x: { type: 'number' },
+              y: { type: 'number' }
+            }
+          }
+        }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'terrain_editor_2d',
+    description: 'Open, apply/close, or inspect the standalone 2D Terrain Editor.',
+    inputSchema: {
+      type: 'object',
+      required: ['action'],
+      properties: {
+        action: { type: 'string', enum: ['get_state', 'open', 'close'] }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'rig_animation',
+    description: 'Build and animate 3D skeletal rigs: list_bones, add_bone, reparent objects/bones, or set_keyframe on sparse 3D animation tracks.',
+    inputSchema: {
+      type: 'object',
+      required: ['action'],
+      properties: {
+        action: { type: 'string', enum: ['list_bones', 'add_bone', 'reparent', 'set_keyframe'] },
+        name: { type: 'string' },
+        parentId: { type: ['number', 'string'] },
+        parentName: { type: 'string' },
+        childId: { type: ['number', 'string'] },
+        childName: { type: 'string' },
+        position: { type: 'array', items: { type: 'number' }, minItems: 3, maxItems: 3 },
+        rotation: { type: 'array', items: { type: 'number' }, minItems: 3, maxItems: 3 },
+        frameIndex: { type: 'integer', minimum: 0 }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'timeline_clips',
+    description: 'Manage multitrack timeline tracks and FX clips (list, create_track, create_fx_clip, delete_clip, clear).',
+    inputSchema: {
+      type: 'object',
+      required: ['action'],
+      properties: {
+        action: { type: 'string', enum: ['list', 'create_track', 'create_fx_clip', 'delete_clip', 'clear'] },
+        name: { type: 'string' },
+        kind: { type: 'string' },
+        trackId: { type: 'string' },
+        clipId: { type: 'string' },
+        effect: { type: 'string' },
+        startFrame: { type: 'integer', minimum: 0 },
+        endFrame: { type: 'integer', minimum: 0 },
+        params: { type: 'object' }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'canvas_settings',
+    description: 'Configure active canvas symmetry (X/Y), rectangular selection mask (or null to clear), active drawing tool, and brush size.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        symmetryX: { type: 'boolean' },
+        symmetryY: { type: 'boolean' },
+        brushSize: { type: 'integer', minimum: 1, maximum: 32 },
+        tool: { type: 'string' },
+        selection: {
+          type: ['object', 'null'],
+          properties: {
+            x: { type: 'integer' },
+            y: { type: 'integer' },
+            width: { type: 'integer' },
+            height: { type: 'integer' }
+          }
+        }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'camera_3d',
+    description: 'Control the 3D viewport orbit camera (theta, phi, radius, target, snapAxis) and the 3D layer render camera (layerCamPos, layerCamLookAt, fov).',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        theta: { type: 'number' },
+        phi: { type: 'number' },
+        radius: { type: 'number' },
+        target: { type: 'array', items: { type: 'number' }, minItems: 3, maxItems: 3 },
+        snapAxis: { type: 'string', enum: ['x', 'y', 'z'] },
+        sign: { type: 'integer', enum: [1, -1] },
+        layerCamPos: { type: 'array', items: { type: 'number' }, minItems: 3, maxItems: 3 },
+        layerCamLookAt: { type: 'array', items: { type: 'number' }, minItems: 3, maxItems: 3 },
+        fov: { type: 'number', minimum: 10, maximum: 120 }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: 'export_formats_advanced',
+    description: 'Export specialized studio data formats: tilemap3d_json, ldtk_json, voxel_json (2D layers as 3D voxels), or skeleton_json (3D bone hierarchy).',
+    inputSchema: {
+      type: 'object',
+      required: ['format'],
+      properties: {
+        format: { type: 'string', enum: ['tilemap3d_json', 'ldtk_json', 'voxel_json', 'skeleton_json'] }
+      },
+      additionalProperties: false
+    }
   }
 ];
 

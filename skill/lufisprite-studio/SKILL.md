@@ -5,7 +5,7 @@ description: Create 2D pixel art sprites, filters, gradients, normal maps, light
 
 # LufiSprite Studio MCP Skill
 
-This skill guides AI coding agents (Google Antigravity, Cursor, Claude Code, etc.) on how to use all **40 live MCP tools** inside **LufiSprite Studio v1.224+** via `lufisprite-mcp`.
+This skill guides AI coding agents (Google Antigravity, Cursor, Claude Code, etc.) on how to use all **48 live MCP tools** inside **LufiSprite Studio v1.224+** via `lufisprite-mcp`.
 
 ## 1. Connection & Preflight Check
 
@@ -50,19 +50,24 @@ LufiSprite Studio uses a **right-handed Y-up** 3D coordinate system (`+Y` up, `+
    - `bake_3d_to_2d`: bake the 3D scene view directly into a 2D pixel layer!
 4. **Verify Visually**: Call `get_canvas_screenshot({ source: "3d" })` to inspect alignment, textures, and lighting.
 
-## 4. Tilemap & Export
+## 4. Tilemap 2D/3D, Draw2D/Vector, Rigging, Timeline & Export
 
 - `tilemap_2d`: `get_state`, `create`, `set_tiles`, `fill_rect` for 2D tilemaps.
-- `export_asset`: export `png`, `spritesheet` (horizontal PNG + atlas frames), `obj` (3D Wavefront OBJ text), or `lufi_json`.
+- `tilemap_3d`: `open`, `close`, `clear`, `set_tiles`, `fill_plane`, `add_primitive` (`box`, `cylinder`, `cone`, `propsingle`, `propcross`), `screenshot` for 3D tilemap levels.
+- `draw2d_vector`: `create` (freehand or `vectorOnly`), `draw_stroke`, `draw_vector`, `screenshot`.
+- `terrain_editor_2d`: `open`, `close`, `get_state`.
+- `rig_animation` & `camera_3d`: build bone hierarchies (`add_bone`, `reparent`, `set_keyframe`) and position viewport/render cameras.
+- `timeline_clips` & `canvas_settings`: create multitrack FX clips, set X/Y symmetry, selection masks, tool, and brush size.
+- `export_asset` & `export_formats_advanced`: export `png`, `spritesheet`, `obj`, `lufi_json`, `tilemap3d_json`, `ldtk_json`, `voxel_json`, or `skeleton_json`.
 
-## 5. Quick Reference — All 40 Tools
+## 5. Quick Reference — All 48 Tools
 
 | Category | Tools |
 | --- | --- |
 | **App & Project** | `get_app_state`, `create_project`, `list_projects`, `open_project`, `undo_redo` |
-| **2D Painting & Text** | `draw_grid_ascii`, `draw_pixels`, `draw_shape`, `draw_gradient`, `flood_fill`, `replace_color`, `add_text_2d`, `clear_layer`, `get_layer_pixels` |
+| **2D Painting & Settings** | `draw_grid_ascii`, `draw_pixels`, `draw_shape`, `draw_gradient`, `flood_fill`, `replace_color`, `add_text_2d`, `clear_layer`, `get_layer_pixels`, `canvas_settings` |
 | **Filters & Transforms** | `apply_filter`, `transform_canvas`, `generate_normal_map` |
 | **Layers, FX & Palette** | `list_layers`, `create_layer`, `update_layer`, `add_light_2d`, `add_particle_2d`, `add_special_layer`, `set_palette_colors` |
-| **Animation** | `manage_frames`, `manage_anim_tags` |
-| **3D Modeling & Textures** | `open_3d_viewport`, `add_3d_primitive`, `import_3d_obj`, `create_3d_terrain`, `transform_3d_object`, `set_3d_texture`, `set_3d_material`, `set_3d_fx`, `add_3d_scene_item`, `list_3d_objects`, `bake_3d_to_2d` |
-| **Tilemap & Export** | `tilemap_2d`, `export_asset`, `get_canvas_screenshot` |
+| **Animation & Timeline** | `manage_frames`, `manage_anim_tags`, `timeline_clips` |
+| **3D Modeling, Rig & Cam** | `open_3d_viewport`, `add_3d_primitive`, `import_3d_obj`, `create_3d_terrain`, `transform_3d_object`, `set_3d_texture`, `set_3d_material`, `set_3d_fx`, `add_3d_scene_item`, `list_3d_objects`, `bake_3d_to_2d`, `rig_animation`, `camera_3d` |
+| **Tilemap, Draw2D & Export** | `tilemap_2d`, `tilemap_3d`, `draw2d_vector`, `terrain_editor_2d`, `export_asset`, `export_formats_advanced`, `get_canvas_screenshot` |

@@ -83,7 +83,7 @@ async function run() {
 
     // 2. tools/list
     const listRes = await rpc('tools/list', {});
-    assert.strictEqual(listRes.result.tools.length, 40, 'Expected 40 tools');
+    assert.strictEqual(listRes.result.tools.length, 48, 'Expected 48 tools');
 
     // 3. Health check before WebSocket client connects
     const h1 = await httpGetJson(`http://127.0.0.1:${TEST_PORT}/health`);

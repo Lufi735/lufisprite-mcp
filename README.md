@@ -128,7 +128,7 @@ Copy the `skill/lufisprite-studio` folder into your agent's skills directory so 
 
 ---
 
-## Available MCP Tools (40 Tools)
+## Available MCP Tools (48 Tools)
 
 ### App & Project
 | Tool | Description |
@@ -183,11 +183,19 @@ Copy the `skill/lufisprite-studio` folder into your agent's skills directory so 
 | `list_3d_objects` | List all 3D objects in the 3D layer with their transforms. |
 | `bake_3d_to_2d` | Render/bake the 3D scene directly into a 2D pixel art layer. |
 
-### Tilemap, Export & Visual Inspection
+### Tilemap 2D/3D, Draw2D/Vector, Rig, Timeline & Export
 | Tool | Description |
 | --- | --- |
 | `tilemap_2d` | Inspect, create, or paint tiles in the 2D Tilemap Editor. |
+| `tilemap_3d` | Open, place/remove 3D tiles, fill 3D planes/walls, add 3D tilemap primitives, and capture screenshots in Tilemap 3D. |
+| `draw2d_vector` | Create and draw freehand strokes or Bezier/polygon vectors in Draw2D / Vector mode. |
+| `terrain_editor_2d` | Open, close, or inspect the standalone 2D Terrain Editor. |
+| `rig_animation` | Build 3D bone hierarchies (`add_bone`, `reparent`) and set sparse 3D keyframes (`set_keyframe`). |
+| `timeline_clips` | Create and manage multitrack timeline tracks and FX clips (`wobble`, etc.). |
+| `canvas_settings` | Set X/Y symmetry, selection rectangle, active tool, and brush size. |
+| `camera_3d` | Orbit/snap the 3D viewport camera and position/aim the 3D layer render camera. |
 | `export_asset` | Export `png`, `spritesheet` (with atlas JSON), `obj`, or `lufi_json`. |
+| `export_formats_advanced` | Export `tilemap3d_json`, `ldtk_json`, `voxel_json`, or `skeleton_json`. |
 | `get_canvas_screenshot` | Capture a PNG screenshot of the `2d` composite canvas or `3d` viewport/layer. |
 
 ---
