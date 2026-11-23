@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "lufisprite-studio": {
+      "command": "node",
+      "args": [
+        "/absolute/path/to/lufisprite-mcp/server/index.js"
+      ],
+      "env": {
+        "LUFISPRITE_MCP_PORT": "41924"
+      }
+    }
+  }
+}

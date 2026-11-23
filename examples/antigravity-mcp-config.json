@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "lufisprite-studio": {
+      "command": "node",
+      "args": [
+        "C:/PATH/TO/lufisprite-mcp/server/index.js",
+        "--port",
+        "41924"
+      ]
+    }
+  }
+}

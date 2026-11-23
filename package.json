@@ -1,0 +1,27 @@
+{
+  "name": "lufisprite-mcp",
+  "version": "1.0.0",
+  "description": "Zero-dependency MCP (Model Context Protocol) server and Antigravity skill bridging AI coding agents to LufiSprite Studio v1.224+ for 2D pixel art, animation, and 3D modeling.",
+  "type": "commonjs",
+  "main": "server/index.js",
+  "bin": {
+    "lufisprite-mcp": "./server/index.js"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node test/test-mcp-server.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "lufisprite-studio",
+    "pixel-art",
+    "3d-modeling",
+    "antigravity",
+    "ai-agent"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
